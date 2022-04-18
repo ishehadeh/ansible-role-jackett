@@ -1,0 +1,33 @@
+---
+- name: Query GitHub for latest Jackett release details
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/Jackett/Jackett/releases/latest"
+    follow_redirects: all
+  when: jackett_version == "latest"
+  register: jackett_release_details
+
+- name: Create Jackett bin directory
+  ansible.builtin.file:
+    path: "{{jackett_bin_dir}}"
+    owner: "{{ jackett_user }}"
+    group: "{{ jackett_group }}"
+    state: directory
+
+- name: Install jackett
+  ansible.builtin.unarchive:
+    src: "{{jackett_release_url}}"
+    dest: "{{jackett_bin_dir}}"
+    owner: "{{ jackett_user }}"
+    group: "{{ jackett_group }}"
+    remote_src: true
+  when: >- 
+    not jackett_bin.stat.exists
+    or ((jackett_release_details is not skipped and not jackett_bin_version.stdout_lines[0].endswith(jackett_release_details.json.name))
+         and not jackett_bin_version.stdout_lines[0].endswith(jackett_version))
+
+- name: Install Jackett systemd service
+  ansible.builtin.template:
+    src: jackett.service.j2
+    dest: "{{jackett_systemd_service_dir}}/jackett.service"
+  notify: Restart Jackett
+

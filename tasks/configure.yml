@@ -1,0 +1,42 @@
+---
+- name: Install Jackett config
+  ansible.builtin.template:
+    src: ServerConfig.json.j2
+    dest: "{{jackett_config_dir}}/Jackett/ServerConfig.json"
+    owner: "{{ jackett_user }}"
+    group: "{{ jackett_group }}"
+    mode: "0600"
+  notify: Restart Jackett
+
+- name: Configure Jackett indexers
+  when: jackett_indexers
+  notify: Restart Jackett
+  block:
+    - name: Create Jackett indexer config directory
+      ansible.builtin.file:
+        path: "{{jackett_config_dir}}/Jackett/Indexers"
+        state: directory
+
+    - name: Install Jackett indexer configs
+      ansible.builtin.copy:
+        dest: "{{jackett_config_dir}}/Jackett/Indexers/{{item.key}}.json"
+        content: "{{ item.value | to_json }}"
+        owner: "{{ jackett_user }}"
+        group: "{{ jackett_group }}"
+      loop: "{{ jackett_indexers | dict2items }}"
+
+    - name: Find unmanaged indexers
+      ansible.builtin.find:
+        paths: "{{jackett_config_dir}}/Jackett/Indexers"
+        excludes: "{{ jackett_indexers.keys() | join('.json,') }}.json"
+        patterns:
+          - "*.json.bak"
+          - "*.json"
+      register: unmanaged_indexers
+
+    - name: Remove unmanaged indexers
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ unmanaged_indexers.files }}"
+

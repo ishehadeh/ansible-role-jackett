@@ -1,0 +1,15 @@
+---
+- name: Remove Jackett release
+  ansible.builtin.file:
+    path: "{{jackett_bin_dir}}"
+    state: absent
+
+- name: Remove Jackett config directory
+  ansible.builtin.file:
+    path: "{{jackett_config_dir}}/Jackett"
+    state: absent
+
+- name: Remove Jackett systemd service
+  ansible.builtin.file:
+    path: "{{jackett_systemd_service_dir}}/jackett.service"
+    state: absent

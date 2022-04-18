@@ -1,0 +1,13 @@
+---
+- name: Test Jackett Install
+  hosts: all
+  become: yes
+  become_user: root
+  roles:
+    - role: jackett
+      jackett_state: started
+      jackett_indexers:
+        torrentscsv: []
+  tasks:
+    - name: Check jackett.service status
+      shell: systemctl status jackett

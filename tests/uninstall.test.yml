@@ -1,0 +1,8 @@
+---
+- name: Test Jackett Uninstall
+  hosts: all
+  become: yes
+  become_user: root
+  roles:
+    - role: jackett
+      jackett_state: absent

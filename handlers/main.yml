@@ -1,0 +1,7 @@
+---
+- name: Restart Jackett
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: jackett.service
+    state: restarted
+  when: jackett_state == "started"

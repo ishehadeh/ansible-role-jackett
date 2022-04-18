@@ -1,0 +1,66 @@
+---
+jackett_version: latest
+
+# Base directory for configs, equivalent to ~/.config
+# Actual jackett configs are kept in {{jackett_config_dir}}/Jackett
+# this directory is NOT removed on uninstall
+jackett_config_dir: /opt/jackett
+
+# location where the jackett release tarball is installed
+# the actually binaries are in {{jackett_bin_dir}}/Jackett
+# WARNING: this directory is removed on uninstall
+jackett_bin_dir: /opt/jackett
+
+jackett_user: "{{ ansible_user }}"
+jackett_group: "{{ ansible_user }}"
+
+# values: absent    (uninstalled)
+#         stopped   (installed, not running)
+#         started   (installed, running)
+#         restarted (installed, will be restarted)
+jackett_state: absent
+
+jackett_config:
+  port: 9117
+
+  # should jackett bind to 127.0.0.1?
+  # I have no idea why the you can't just configure an address to bind to
+  allow_external: true
+  admin_password: null
+  auto_update: 'stable' # false, true or 'prerelease' also accepted. true is equivalent to stable
+
+  # HTTP path prefix for Jackett
+  base_path: null
+
+  # host and protocol where Jackett UI can be accessed
+  base_url: null
+
+  # directory where torrent files are saved
+  blackhole_dir: null
+
+  cache:
+    ttl: 2100
+    max_results_per_indexer: 10000
+
+  omdb: null
+  #   key: "abc"
+  #   url: "https://www.omdbapi.com/"
+
+  proxy: null
+  #   type: http # jackett supports "http", "socks4", "socks5" 
+  #   url: "example.com"
+  #   port: 1234
+  #   username: "httproxy" # optional. default: null
+  #   password: "password1" # optional. default: null
+  #   anonymous: true # optional. default: true
+
+# A list of indexer configurations
+jackett_indexers: null
+# Example:
+# jackett_indexers:
+#   thepiratebay: []
+#   torrentscsv:
+#     - name: Site Link
+#       id: sitelink
+#       type: inputstring
+#       value: "https://localhost/torrents-csv/"

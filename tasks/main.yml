@@ -1,0 +1,37 @@
+---
+- name: Stat Jackett executable
+  ansible.builtin.stat:
+    path: "{{jackett_bin_dir}}/Jackett/jackett"
+  register: jackett_bin
+
+- name: Stat Jackett systemd service
+  ansible.builtin.stat:
+    path: "{jackett_systemd_service_dir}}/jackett.service"
+  register: jackett_service
+
+- name: Get installed jackett version
+  ansible.builtin.command:
+    argv: ["{{jackett_bin_dir}}/Jackett/jackett", "--version"]
+    strip_empty_ends: True
+  when: jackett_bin.stat.exists
+  register: jackett_bin_version
+  failed_when: jackett_bin_version.rc == 0 or jackett_bin_version.rc >= 2 # jacket --version returns rc=1 for some reason
+
+- name: Install Jackett
+  when: jackett_state != "absent" and (jackett_bin_version is skipped or not jackett_bin_version.stdout_lines[0].endswith(jackett_version)) 
+  import_tasks: install.yml
+
+- name: Configure Jackett
+  when: jackett_state != "absent"
+  import_tasks: configure.yml
+
+- name: Update Jackett systemd state
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: jackett.service
+    state: "{{ jackett_state_to_systemd_state[jackett_state] }}"
+  when: jackett_service.stat.exists and jackett_state in jackett_state_to_systemd_state
+
+- name: Uninstall Jackett
+  when: jackett_state == "absent" 
+  import_tasks: uninstall.yml

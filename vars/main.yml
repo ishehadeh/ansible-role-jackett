@@ -1,0 +1,35 @@
+---
+# jackett uses numbers to identify proxy types
+jackett_proxy_type_map:
+  disabled: -1
+  http: 0
+  socks4: 1
+  socks5: 2
+
+jackett_state_to_systemd_state:
+  absent: stopped
+  stopped: stopped
+  started: started
+  restart: restarted
+
+jackett_release_filename: |-
+  Jackett.Binaries.Linux
+  {%- if ansible_architecture == 'x86_64' -%}
+    AMDx64
+  {%- elif ansible_architecture == 'aarch64' -%}
+    ARM64
+  {%- elif ansible_architecture.startswith('armv') -%}
+    ARM32
+  {%- else -%}
+    ERROR
+  {%- endif -%}
+  .tar.gz
+
+jackett_release_url: |-
+  {%- if jackett_version == "latest" -%}
+  https://github.com/Jackett/Jackett/releases/latest/download/{{jackett_release_filename}}
+  {%- else -%}
+  https://github.com/Jackett/Jackett/releases/download/v{{jackett_version}}/{{jackett_release_filename}}
+  {%- endif -%}
+
+jackett_systemd_service_dir: /etc/systemd/system

@@ -1,0 +1,18 @@
+[Unit]
+Description=Jackett Daemon
+After=network.target
+
+[Service]
+SyslogIdentifier=jackett
+Restart=always
+RestartSec=5
+Type=simple
+User={{ jackett_user | quote }}
+Group={{ jackett_group | quote }}
+WorkingDirectory={{ jackett_bin_dir + "/Jackett" | quote }}
+ExecStart=/bin/sh {{ jackett_bin_dir + "/Jackett/jackett_launcher.sh" | quote }}
+TimeoutStopSec=30
+Environment={{"XDG_CONFIG_HOME=" + jackett_config_dir | quote}}
+
+[Install]
+WantedBy=multi-user.targe
