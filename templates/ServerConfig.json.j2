@@ -1,15 +1,15 @@
 {
-  "Port": {{ jackett_config.port | int | to_json }},
-  "AllowExternal": {{ jackett_config.allow_external | bool | to_json }},
-  "APIKey": "{{ jackett_config.api_key | default('null') | to_json }}",
-  "AdminPassword": {{ jackett_config.admin_password | to_json }},
-  "BlackholeDir": {{ jackett_config.blackhole_dir | to_json }},
+  "Port": {{ jackett_config.port | default(9117) | int | to_json }},
+  "AllowExternal": {{ jackett_config.allow_external | default(true) | bool | to_json }},
+  "APIKey": "{{ jackett_config.api_key | default(None) | to_json }}",
+  "AdminPassword": {{ jackett_config.admin_password | default(None) | to_json }},
+  "BlackholeDir": {{ jackett_config.blackhole_dir | default(None) | to_json }},
   "UpdateDisabled": {{ (jackett_config.auto_update | default(False, true) != False) | to_json }},
-  "UpdatePrerelease": {{ jackett_config.auto_update == 'prerelease' | to_json }},
-  "BasePathOverride": {{ jackett_config.base_path | to_json }},
-  "BaseUrlOverride": {{ jackett_config.base_url | to_json }},
+  "UpdatePrerelease": {{ jackett_config.auto_update | default('') == 'prerelease' | to_json }},
+  "BasePathOverride": {{ jackett_config.base_path | default(None) | to_json }},
+  "BaseUrlOverride": {{ jackett_config.base_url | default(None) | to_json }},
 
-{% if jackett_config.cache %}
+{% if jackett_config.cache | default(false)  %}
   "CacheEnabled": true,
   "CacheTtl": {{ jackett_config.cache.ttl | to_json }},
   "CacheMaxResultsPerIndexer": {{ jackett_config.cache.max_results_per_indexer | to_json }},
@@ -17,12 +17,12 @@
   "CacheEnabled": false,
 {% endif %}
 
-{% if jackett_config.omdb %}
+{% if jackett_config.omdb | default(false)  %}
   "OmdbApiKey": {{ jackett_config.omdb.key | to_json}},
   "OmdbApiUrl": {{ jackett_config.omdb.url | to_json}},
 {% endif %}
 
-{% if jackett_config.proxy %}
+{% if jackett_config.proxy | default(false)  %}
   "ProxyType": {{ jackett_config.proxy_type_map[jackett_config.proxy.type] }},
   "ProxyUrl": "{{ jackett_config.proxy.url | to_json }},
   "ProxyPort": {{ jackett_config.proxy.port | int | to_json }},
