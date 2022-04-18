@@ -15,6 +15,8 @@
     - name: Create Jackett indexer config directory
       ansible.builtin.file:
         path: "{{jackett_config_dir}}/Jackett/Indexers"
+        owner: "{{ jackett_user }}"
+        group: "{{ jackett_group }}"
         state: directory
 
     - name: Install Jackett indexer configs
