@@ -1,26 +1,26 @@
 {
   "Port": {{ jackett_config.port | default(9117) | int | to_json }},
   "AllowExternal": {{ jackett_config.allow_external | default(true) | bool | to_json }},
-  "APIKey": "{{ jackett_config.api_key | default(None) | to_json }}",
+  "APIKey": {{ jackett_config.api_key | default(None) | to_json }},
   "AdminPassword": {{ jackett_config.admin_password | default(None) | to_json }},
   "BlackholeDir": {{ jackett_config.blackhole_dir | default(None) | to_json }},
   "UpdateDisabled": {{ (jackett_config.auto_update | default(False, true) != False) | to_json }},
-  "UpdatePrerelease": {{ jackett_config.auto_update | default('') == 'prerelease' | to_json }},
+  "UpdatePrerelease": {{ (jackett_config.auto_update | default(False) == 'prerelease') | to_json }},
   "BasePathOverride": {{ jackett_config.base_path | default(None) | to_json }},
   "BaseUrlOverride": {{ jackett_config.base_url | default(None) | to_json }},
 
-{% if jackett_config.cache | default(false)  %}
+{% if jackett_config.cache | default(true)  %}
   "CacheEnabled": true,
-  "CacheTtl": {{ jackett_config.cache.ttl | to_json }},
-  "CacheMaxResultsPerIndexer": {{ jackett_config.cache.max_results_per_indexer | to_json }},
+  "CacheTtl": {{ (jackett_config.cache | default({'ttl': 2100})).ttl | to_json }},
+  "CacheMaxResultsPerIndexer": {{ (jackett_config.cache | default({'max_results_per_indexer': 1000})).max_results_per_indexer | to_json }},
 {% else %}
   "CacheEnabled": false,
+  "CacheTtl": null,
+  "CacheMaxResultsPerIndexer": 1000,
 {% endif %}
 
-{% if jackett_config.omdb | default(false)  %}
-  "OmdbApiKey": {{ jackett_config.omdb.key | to_json}},
-  "OmdbApiUrl": {{ jackett_config.omdb.url | to_json}},
-{% endif %}
+  "OmdbApiKey": {{ (jackett_config.omdb | default({'key': None})).key | to_json }},
+  "OmdbApiUrl": {{ (jackett_config.omdb | default({'url': None})).url | to_json }},
 
 {% if jackett_config.proxy | default(false)  %}
   "ProxyType": {{ jackett_config.proxy_type_map[jackett_config.proxy.type] }},
@@ -30,12 +30,17 @@
   "ProxyPassword": {{ jackett_config.proxy.password | to_json }},
   "ProxyIsAnonymous": {{ jackett_config.proxy.anonymous | default('true') | bool | to_json }},
 {% else %}
-  "ProxyType": -1,
+  "ProxyType": 0,
+  "ProxyUrl": null,
+  "ProxyPort": null,
+  "ProxyUsername": null,
+  "ProxyPassword": null,
+  "ProxyIsAnonymous": true,
 {% endif %}
 
   "InstanceId": null, {#- seems unused? #}
 
 {# FlareSolvarr doesn't work ATM so not bothering with these #}
-  "FlareSolverrUrl": null
+  "FlareSolverrUrl": null,
   "FlareSolverrMaxTimeout": 55000
 }

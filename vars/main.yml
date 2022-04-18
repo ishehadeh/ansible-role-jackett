@@ -1,7 +1,7 @@
 ---
 # jackett uses numbers to identify proxy types
 jackett_proxy_type_map:
-  disabled: -1
+  disabled: 0
   http: 0
   socks4: 1
   socks5: 2
