@@ -15,7 +15,7 @@
   "CacheMaxResultsPerIndexer": {{ (jackett_config.cache | default({'max_results_per_indexer': 1000})).max_results_per_indexer | to_json }},
 {% else %}
   "CacheEnabled": false,
-  "CacheTtl": null,
+  "CacheTtl": 2100,
   "CacheMaxResultsPerIndexer": 1000,
 {% endif %}
 
