@@ -47,7 +47,7 @@ jackett_config:
   #   url: "https://www.omdbapi.com/"
 
   proxy: null
-  #   type: http # jackett supports "http", "socks4", "socks5" 
+  #   type: http # jackett supports "http", "socks4", "socks5"
   #   url: "example.com"
   #   port: 1234
   #   username: "httproxy" # optional. default: null
@@ -55,7 +55,7 @@ jackett_config:
   #   anonymous: true # optional. default: true
 
 # A list of indexer configurations
-jackett_indexers: null
+jackett_indexers: {}
 # Example:
 # jackett_indexers:
 #   thepiratebay: []
